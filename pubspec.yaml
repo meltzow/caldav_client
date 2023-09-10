@@ -2,14 +2,14 @@ name: caldav_client
 description: A CalDAV client for dart. It allows to make CalDAV
   requests to a server easily and quickly.
 version: 1.1.0
-repository: https://github.com/julisanchez/caldav_client
-issue_tracker: https://github.com/julisanchez/caldav_client/issues
+repository: https://github.com/tytot/caldav_client
+issue_tracker: https://github.com/tytot/caldav_client/issues
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: '>=3.0.0'
 
 dependencies:
-  xml: ^5.0.2
+  xml: ^6.4.2
 
 dev_dependencies:
   pedantic: ^1.11.0
