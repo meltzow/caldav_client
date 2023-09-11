@@ -50,7 +50,7 @@ void main() {
 
       mockServer.enqueueResponse(response);
 
-      await client.getObjects('/dav.php/calendars/juli/default/', depth: 1);
+      await client.getEvents('/dav.php/calendars/juli/default/', depth: 1);
 
       var request = mockServer.takeRequest();
       expect(request.method, 'REPORT');
@@ -70,10 +70,10 @@ void main() {
       var now = DateTime.now();
       var end = DateTime.utc(2021, 11, 9);
 
-      await client.getObjectsInTimeRange(
+      await client.getEventsInTimeRange(
           '/dav.php/calendars/juli/default/', now, end,
           depth: 1);
-      
+
       var request = mockServer.takeRequest();
       expect(request.method, 'REPORT');
       expect(request.uri.path, '/dav.php/calendars/juli/default/');
