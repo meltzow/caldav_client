@@ -77,12 +77,12 @@ void main() {
       expect(elements[2].name, 'shared-owner');
     });
 
-    test('supported-calendar-component-set',(){
-       final elements =
-          (multistatus.response[0].propstat.prop['supported-calendar-component-set'] as List<Element>);
+    test('supported-calendar-component-set', () {
+      final elements = (multistatus.response[0].propstat
+          .prop['supported-calendar-component-set'] as List<Element>);
 
       expect(elements[1].name, 'comp');
-      expect(elements[1].atributes['name'], 'VTODO');
+      expect(elements[1].attributes['name'], 'VTODO');
     });
   });
 }

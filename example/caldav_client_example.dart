@@ -35,7 +35,7 @@ void main() async {
 
   // Print calendar objects info
   if (calendars.isNotEmpty) {
-    var getObjectsResult = await client.getObjects(calendars.first);
+    var getObjectsResult = await client.getEvents(calendars.first);
 
     for (var result in getObjectsResult.multistatus!.response) {
       print('PATH: ${result.href}');

@@ -12,6 +12,31 @@ class CalDavClient extends CalDavBase {
             connectionTimeout: connectionTimeout,
             headers: headers);
 
+  Future<CalResponse> getPrincipal() {
+    final body = '''
+    <d:propfind xmlns:d="DAV:">
+      <d:prop>
+        <d:current-user-principal />
+      </d:prop>
+    </d:propfind>
+    ''';
+    return propfind('', body, depth: 0);
+  }
+
+  Future<CalResponse> getCalendars(String path) {
+    final body = '''
+    <d:propfind xmlns:d="DAV:" xmlns:cs="http://calendarserver.org/ns/" xmlns:c="urn:ietf:params:xml:ns:caldav">
+      <d:prop>
+        <d:resourcetype />
+        <d:displayname />
+        <cs:getctag />
+        <c:supported-calendar-component-set />
+      </d:prop>
+    </d:propfind>
+    ''';
+    return propfind(path, body, depth: 1);
+  }
+
   /// Get the display name and the ctag.
   /// This ctag works like a change id.
   /// Every time the ctag has changed, you know something in the calendar has changed too.

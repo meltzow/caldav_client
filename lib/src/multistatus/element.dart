@@ -2,12 +2,12 @@ import 'package:xml/xml.dart';
 
 class Element {
   final String name;
-  final Map<String, dynamic> atributes;
+  final Map<String, dynamic> attributes;
   final String text;
 
   Element(
       {required this.name,
-      this.atributes = const <String, dynamic>{},
+      this.attributes = const <String, dynamic>{},
       this.text = ''});
 
   factory Element.fromXml(XmlElement element) {
@@ -18,6 +18,6 @@ class Element {
     });
 
     return Element(
-        name: element.name.local, text: element.text, atributes: attributes);
+        name: element.name.local, text: element.innerText, attributes: attributes);
   }
 }
