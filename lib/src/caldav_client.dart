@@ -42,7 +42,9 @@ class CalDavClient extends CalDavBase {
     </d:prop>
     <c:filter>
         <c:comp-filter name="VCALENDAR">
-          <c:comp-filter name="VEVENT" />
+          <c:comp-filter name="VEVENT">
+            <c:time-range start= "19000101T000000Z" end="99991231T235959Z" />
+          </c:comp-filter>
         </c:comp-filter>
     </c:filter>
     </c:calendar-query>
