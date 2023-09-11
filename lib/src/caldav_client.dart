@@ -37,7 +37,7 @@ class CalDavClient extends CalDavBase {
     <d:prop>
         <d:getetag />
         <c:calendar-data>
-          <c:expand />
+          <c:expand start="19000101T000000Z" end="99991231T235959Z" />
         </c:calendar-data>
     </d:prop>
     <c:filter>
@@ -52,20 +52,23 @@ class CalDavClient extends CalDavBase {
   }
 
   /// This request will give us every object that's a VCALENDAR object, and its etag in a given time range.
-  Future<CalResponse> getEventsInTimeRange(String path, DateTime start,
-      DateTime end, {int? depth}) {
+  Future<CalResponse> getEventsInTimeRange(
+      String path, DateTime start, DateTime end,
+      {int? depth}) {
+    final normalizedStart = stringify(start);
+    final normalizedEnd = stringify(end);
     var body = '''
     <c:calendar-query xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:caldav">
     <d:prop>
         <d:getetag />
         <c:calendar-data>
-          <c:expand start="$start" end="$end" />
+          <c:expand start="$normalizedStart" end="$normalizedEnd" />
         </c:calendar-data>
     </d:prop>
     <c:filter>
         <c:comp-filter name="VCALENDAR">
           <c:comp-filter name="VEVENT">
-            <c:time-range start="$start" end="$end" /> 
+            <c:time-range start="$normalizedStart" end="$normalizedEnd" /> 
           </c:comp-filter>
         </c:comp-filter>
     </c:filter>

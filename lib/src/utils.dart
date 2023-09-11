@@ -1,4 +1,3 @@
-
 String trim(String str, [String? chars]) {
   var pattern =
       (chars != null) ? RegExp('^[$chars]+|[$chars]+\$') : RegExp(r'^\s+|\s+$');
@@ -17,4 +16,8 @@ String rtrim(String str, [String? chars]) {
 
 String join(String path0, String path1) {
   return rtrim(path0, '/') + '/' + ltrim(path1, '/');
+}
+
+String stringify(DateTime dateTime) {
+  return '${dateTime.toUtc().toIso8601String().substring(0, 19).replaceAll(RegExp('[-:]'), '')}Z';
 }
