@@ -95,10 +95,10 @@ class CalDavClient extends CalDavBase {
       {String syncToken = '', int depth = 1}) {
     var body = '''
     <d:sync-collection xmlns:d="DAV:">
-      <d:sync-token></d:sync-token>
+      <d:sync-token>$syncToken</d:sync-token>
       <d:sync-level>1</d:sync-level>
       <d:prop>
-          <d:getetag />
+        <d:getetag />
       </d:prop>
     </d:sync-collection>
     ''';
@@ -115,9 +115,17 @@ class CalDavClient extends CalDavBase {
     var body = '''
     <c:calendar-multiget xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:caldav">
       <d:prop>
-        <d:getetag />
-        <c:calendar-data />
+        <c:calendar-data>
+          <c:expand start="19000101T000000Z" end="99991231T235959Z" />
+        </c:calendar-data>
       </d:prop>
+      <c:filter>
+        <c:comp-filter name="VCALENDAR">
+          <c:comp-filter name="VEVENT">
+            <c:time-range start= "19000101T000000Z" end="99991231T235959Z" />
+          </c:comp-filter>
+        </c:comp-filter>
+      </c:filter>
       ''' +
         hrefs.map((href) => '<d:href>$href</d:href>').join('\n') +
         '''
