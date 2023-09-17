@@ -3,23 +3,34 @@ import 'package:xml/xml.dart';
 
 class Response {
   final String href;
-  final Propstat propstat;
+  final String status;
+  final Propstat? propstat;
 
-  Response({required this.href, required this.propstat});
+  Response({required this.href, required this.status, this.propstat});
 
-  factory Response.fromXml(XmlElement element) {
+  static Response? fromXml(XmlElement element) {
     if (element.name.local == 'response') {
-      var elements = element.children.whereType<XmlElement>();
+      final href = element.getElement('href', namespace: '*')?.innerText;
+      if (href == null) {
+        return null;
+      }
 
-      var href =
-          elements.firstWhere((element) => element.name.local == 'href').text;
-
-      var propstatXml =
-          elements.firstWhere((element) => element.name.local == 'propstat');
-
-      return Response(href: href, propstat: Propstat.fromXml(propstatXml));
+      final propstat = element.getElement('propstat', namespace: '*');
+      if (propstat == null) {
+        final status = element.getElement('status', namespace: '*');
+        return status == null
+            ? null
+            : Response(href: href, status: status.innerText);
+      }
+      final status = propstat.getElement('status', namespace: '*');
+      return status == null
+          ? null
+          : Response(
+              href: href,
+              status: status.innerText,
+              propstat: Propstat.fromXml(propstat));
+    } else {
+      return null;
     }
-
-    throw Error();
   }
 }

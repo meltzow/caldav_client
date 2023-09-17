@@ -8,31 +8,26 @@ class MultiStatus {
   MultiStatus({required this.response, this.syncToken});
 
   factory MultiStatus.fromXml(XmlDocument element) {
-    var response = <Response>[];
+    var child = element.firstElementChild;
 
-    var multistatus = element.firstElementChild;
-
-    if (multistatus!.name.local == 'multistatus') {
-      var elements = multistatus.children.whereType<XmlElement>();
-
+    if (child!.name.local == 'multistatus') {
       // add responses
-      elements
+      final response = child.children
+          .whereType<XmlElement>()
           .where((element) => element.name.local == 'response')
-          .forEach((element) {
-        response.add(Response.fromXml(element));
-      });
+          .map((element) => Response.fromXml(element))
+          .whereType<Response>()
+          .toList();
 
-      try {
-        var syncToken = elements
-            .firstWhere((element) => element.name.local == 'sync-token');
-
-        return MultiStatus(response: response, syncToken: syncToken.text);
-      } catch (e) {
-        return MultiStatus(response: response);
+      final syncToken =
+          child.getElement('sync-token', namespace: '*')?.innerText;
+      return MultiStatus(response: response, syncToken: syncToken);
+    } else if (child.name.local == 'error') {
+      if (child.firstElementChild?.name.local == 'valid-sync-token') {
+        throw FormatException('Invalid sync token');
       }
     }
-
-    throw Error();
+    throw FormatException();
   }
 
   factory MultiStatus.fromString(String string) {

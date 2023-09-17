@@ -8,6 +8,7 @@ class CalResponse {
   final String url;
   final int statusCode;
   final Map<String, dynamic> headers;
+  final String? body;
   final XmlDocument? document;
   final MultiStatus? multistatus;
 
@@ -15,19 +16,20 @@ class CalResponse {
       {required this.url,
       required this.statusCode,
       required this.headers,
+      this.body,
       this.document})
       : multistatus = document != null ? MultiStatus.fromXml(document) : null;
 
   static Future<CalResponse> fromHttpResponse(
       HttpClientResponse response, String url) async {
     var headers = <String, dynamic>{};
-    
+
     // set headers
     response.headers.forEach((name, values) {
       headers[name] = values.length == 1 ? values[0] : values;
     });
-    
-    var body = await utf8.decoder.bind(response).join();
+
+    final body = await utf8.decoder.bind(response).join();
 
     XmlDocument? document;
 
@@ -41,6 +43,7 @@ class CalResponse {
         url: url,
         statusCode: response.statusCode,
         headers: headers,
+        body: body,
         document: document);
   }
 

@@ -94,34 +94,20 @@ class CalDavBase {
     return CalResponse(url: uri, headers: {}, statusCode: response.statusCode);
   }
 
-  /// Update calendar ifMatch the etag
-  Future<CalResponse> updateCal(String path, String etag, dynamic calendar,
-      {Map<String, dynamic>? headers}) async {
-    var uri = _fullUri(path);
-    var request = await client.putUrl(Uri.parse(uri));
-
+  Future<CalResponse> getCal(String path) async {
+    final uri = _fullUri(path);
+    final request = await client.getUrl(Uri.parse(uri));
     request.headers.contentType =
-        ContentType('text', 'calendar', charset: 'utf-8');
-
-    var temp = <String, dynamic>{
-      'If-Match': '"$etag"',
-      ...?headers,
-      ...?this.headers
-    };
-
-    temp.forEach((key, value) {
+        ContentType('application', 'xml', charset: 'utf-8');
+    headers?.forEach((key, value) {
       request.headers.add(key, value);
     });
-
-    request.write(calendar);
-
-    var response = await request.close();
-
+    final response = await request.close();
     return CalResponse.fromHttpResponse(response, uri);
   }
 
-  /// Create calendar
-  Future<CalResponse> createCal(String path, dynamic calendar,
+  /// Put calendar
+  Future<CalResponse> putCal(String path, dynamic calendar,
       {Map<String, dynamic>? headers}) async {
     var uri = _fullUri(path);
 

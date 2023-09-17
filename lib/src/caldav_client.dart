@@ -92,10 +92,10 @@ class CalDavClient extends CalDavBase {
   /// have the latest copy.
   /// If it did change, you must request all the etags in the entire calendar again.
   Future<CalResponse> getChanges(String path,
-      {String syncToken = '', int depth = 1}) {
+      {String? syncToken, int depth = 1}) {
     var body = '''
     <d:sync-collection xmlns:d="DAV:">
-      <d:sync-token>$syncToken</d:sync-token>
+      <d:sync-token>${syncToken ?? ''}</d:sync-token>
       <d:sync-level>1</d:sync-level>
       <d:prop>
         <d:getetag />
@@ -115,17 +115,8 @@ class CalDavClient extends CalDavBase {
     var body = '''
     <c:calendar-multiget xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:caldav">
       <d:prop>
-        <c:calendar-data>
-          <c:expand start="19000101T000000Z" end="99991231T235959Z" />
-        </c:calendar-data>
+        <c:calendar-data />
       </d:prop>
-      <c:filter>
-        <c:comp-filter name="VCALENDAR">
-          <c:comp-filter name="VEVENT">
-            <c:time-range start= "19000101T000000Z" end="99991231T235959Z" />
-          </c:comp-filter>
-        </c:comp-filter>
-      </c:filter>
       ''' +
         hrefs.map((href) => '<d:href>$href</d:href>').join('\n') +
         '''

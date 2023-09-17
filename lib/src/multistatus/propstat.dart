@@ -3,9 +3,8 @@ import 'package:xml/xml.dart';
 
 class Propstat {
   final Map<String, dynamic> prop;
-  final int status;
 
-  Propstat({required this.prop, required this.status});
+  Propstat({required this.prop});
 
   factory Propstat.fromXml(XmlElement element) {
     if (element.name.local == 'propstat') {
@@ -31,13 +30,7 @@ class Propstat {
         prop[element.name.local] = value;
       });
 
-      // get status
-      var status = elements
-          .firstWhere((element) => element.name.local == 'status')
-          .text
-          .split(' ')[1];
-
-      return Propstat(prop: prop, status: int.parse(status));
+      return Propstat(prop: prop);
     }
 
     throw Error();
