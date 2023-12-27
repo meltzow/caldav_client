@@ -1,4 +1,5 @@
 import 'package:caldav_client/src/cal_response.dart';
+
 import 'caldav_base.dart';
 import 'utils.dart';
 
@@ -23,14 +24,27 @@ class CalDavClient extends CalDavBase {
     return propfind('', body, depth: depth);
   }
 
+  Future<CalResponse> getCalendarHomeSet(String path, {int depth = 0}) {
+    final body = '''
+    <d:propfind xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:caldav">
+      <d:prop>
+        <c:calendar-home-set />
+      </d:prop>
+    </d:propfind>
+    ''';
+    return propfind('', body, depth: depth);
+  }
+
   Future<CalResponse> getCalendars(String path, {int depth = 1}) {
     final body = '''
-    <d:propfind xmlns:d="DAV:" xmlns:cs="http://calendarserver.org/ns/" xmlns:c="urn:ietf:params:xml:ns:caldav">
+    <d:propfind xmlns:d="DAV:" xmlns:cs="http://calendarserver.org/ns/" xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:apple="http://apple.com/ns/ical/">
       <d:prop>
         <d:resourcetype />
         <d:displayname />
         <cs:getctag />
         <c:supported-calendar-component-set />
+        <apple:calendar-color />
+        <apple:calendar-order />
       </d:prop>
     </d:propfind>
     ''';
@@ -45,13 +59,13 @@ class CalDavClient extends CalDavBase {
         <d:getetag />
         <d:sync-token />
         <c:calendar-data>
-          <c:expand start="19000101T000000Z" end="99991231T235959Z" />
+          <c:expand start="20230101T000000Z" end="20501231T235959Z" />
         </c:calendar-data>
     </d:prop>
     <c:filter>
         <c:comp-filter name="VCALENDAR">
           <c:comp-filter name="VEVENT">
-            <c:time-range start= "19000101T000000Z" end="99991231T235959Z" />
+            <c:time-range start= "20230101T000000Z" end="20501231T235959Z" />
           </c:comp-filter>
         </c:comp-filter>
     </c:filter>
