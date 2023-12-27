@@ -4,6 +4,7 @@ import 'package:caldav_client/src/authorization.dart';
 import 'package:caldav_client/src/caldav_client.dart';
 import 'package:mock_web_server/mock_web_server.dart';
 import 'package:test/test.dart';
+import 'package:xml/xml.dart';
 
 void main() {
   group('A group of tests', () {
@@ -26,24 +27,30 @@ void main() {
       mockServer.shutdown();
     });
 
-    // test('Initial Sync', () async {
-    //   var response = MockResponse()
-    //     ..body = ''
-    //     ..httpCode = 207;
-    //
-    //   mockServer.enqueueResponse(response);
-    //
-    //   await client.initialSync('/dav.php/calendars/juli', depth: 1);
-    //
-    //   var request = mockServer.takeRequest();
-    //   expect(request.method, 'PROPFIND');
-    //   expect(request.uri.path, '/dav.php/calendars/juli');
-    //   expect(request.headers['depth'], '1');
-    //   expect(request.headers['authorization'], isNotNull);
-    //   expect(request.body, isNotNull);
-    // });
+    test('Get calendars', () async {
+      final file = File('./test/principal.xml');
+      final document = XmlDocument.parse(file.readAsStringSync());
 
-    test('Get Objects', () async {
+      var response = MockResponse()
+        ..body = document
+        ..httpCode = 207;
+
+      mockServer.enqueueResponse(response);
+
+      var response1 = await client.getPrincipal('/dav.php/calendars/juli');
+      response1.body;
+
+      // /remote.php/dav/principals/users/admin/
+
+      var request = mockServer.takeRequest();
+      expect(request.method, 'PROPFIND');
+      expect(request.uri.path, '/dav.php/calendars/juli');
+      expect(request.headers['depth'], '0');
+      expect(request.headers['authorization'], isNotNull);
+      expect(request.body, isNotNull);
+    });
+
+    test('Get events', () async {
       var response = MockResponse()
         ..body = ''
         ..httpCode = 207;
@@ -60,7 +67,7 @@ void main() {
       expect(request.body, isNotNull);
     });
 
-    test('Get Objects in time range', () async {
+    test('Get events in time range', () async {
       var response = MockResponse()
         ..body = ''
         ..httpCode = 207;

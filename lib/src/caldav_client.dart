@@ -13,7 +13,7 @@ class CalDavClient extends CalDavBase {
             connectionTimeout: connectionTimeout,
             headers: headers);
 
-  Future<CalResponse> getPrincipal({int depth = 0}) {
+  Future<CalResponse> getPrincipal(String path, {int depth = 0}) {
     final body = '''
     <d:propfind xmlns:d="DAV:">
       <d:prop>
@@ -21,7 +21,7 @@ class CalDavClient extends CalDavBase {
       </d:prop>
     </d:propfind>
     ''';
-    return propfind('', body, depth: depth);
+    return propfind(path, body, depth: depth);
   }
 
   Future<CalResponse> getCalendarHomeSet(String path, {int depth = 0}) {
@@ -32,7 +32,7 @@ class CalDavClient extends CalDavBase {
       </d:prop>
     </d:propfind>
     ''';
-    return propfind('', body, depth: depth);
+    return propfind(path, body, depth: depth);
   }
 
   Future<CalResponse> getCalendars(String path, {int depth = 1}) {
