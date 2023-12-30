@@ -3,12 +3,12 @@ import 'dart:io';
 import 'package:caldav_client/src/cal_response.dart';
 import 'package:caldav_client/src/utils.dart';
 
-class CalDavBase {
+class WebDav {
   final HttpClient client;
   final String baseUrl;
   final Map<String, dynamic>? headers;
 
-  CalDavBase({
+  WebDav({
     required this.baseUrl,
     this.headers,
     Duration? connectionTimeout,

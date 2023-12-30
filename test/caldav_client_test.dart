@@ -28,7 +28,7 @@ void main() {
     });
 
     test('Get calendars', () async {
-      final file = File('./test/principal.xml');
+      final file = File('./test/fixture/principal.xml');
       final document = XmlDocument.parse(file.readAsStringSync());
 
       var response = MockResponse()
@@ -38,9 +38,7 @@ void main() {
       mockServer.enqueueResponse(response);
 
       var response1 = await client.getPrincipal('/dav.php/calendars/juli');
-      response1.body;
-
-      // /remote.php/dav/principals/users/admin/
+      expect(response1, '/remote.php/dav/principals/users/admin/');
 
       var request = mockServer.takeRequest();
       expect(request.method, 'PROPFIND');

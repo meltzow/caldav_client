@@ -2,10 +2,10 @@ import 'package:caldav_client/src/multistatus/response.dart';
 import 'package:xml/xml.dart';
 
 class MultiStatus {
-  final List<Response> response;
+  final List<Response> responses;
   final String? syncToken;
 
-  MultiStatus({required this.response, this.syncToken});
+  MultiStatus({required this.responses, this.syncToken});
 
   factory MultiStatus.fromXml(XmlDocument element) {
     var child = element.firstElementChild;
@@ -21,7 +21,7 @@ class MultiStatus {
 
       final syncToken =
           child.getElement('sync-token', namespace: '*')?.innerText;
-      return MultiStatus(response: response, syncToken: syncToken);
+      return MultiStatus(responses: response, syncToken: syncToken);
     } else if (child.name.local == 'error') {
       if (child.firstElementChild?.name.local == 'valid-sync-token') {
         throw FormatException('Invalid sync token');

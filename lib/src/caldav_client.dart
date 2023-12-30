@@ -1,9 +1,9 @@
 import 'package:caldav_client/src/cal_response.dart';
+import 'package:caldav_client/src/webdav.dart';
 
-import 'caldav_base.dart';
 import 'utils.dart';
 
-class CalDavClient extends CalDavBase {
+class CalDavClient extends WebDav {
   CalDavClient(
       {required String baseUrl,
       Duration? connectionTimeout,
@@ -13,7 +13,7 @@ class CalDavClient extends CalDavBase {
             connectionTimeout: connectionTimeout,
             headers: headers);
 
-  Future<CalResponse> getPrincipal(String path, {int depth = 0}) {
+  Future<String> getPrincipal(String path, {int depth = 0}) async {
     final body = '''
     <d:propfind xmlns:d="DAV:">
       <d:prop>
@@ -21,7 +21,19 @@ class CalDavClient extends CalDavBase {
       </d:prop>
     </d:propfind>
     ''';
-    return propfind(path, body, depth: depth);
+    var response1 = await propfind(path, body, depth: depth);
+
+    for (var response in response1.multistatus!.responses) {
+      if (response.statusSuccess()) {
+        for (var entry in response.propstat!.prop.entries) {
+          if (entry.key == 'current-user-principal' &&
+              entry.value[0].name == 'href') {
+            return entry.value[0].text;
+          }
+        }
+      }
+    }
+    return '';
   }
 
   Future<CalResponse> getCalendarHomeSet(String path, {int depth = 0}) {

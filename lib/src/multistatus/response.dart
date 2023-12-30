@@ -8,6 +8,10 @@ class Response {
 
   Response({required this.href, required this.status, this.propstat});
 
+  bool statusSuccess() {
+    return status.isNotEmpty && status.contains('200');
+  }
+
   static Response? fromXml(XmlElement element) {
     if (element.name.local == 'response') {
       final href = element.getElement('href', namespace: '*')?.innerText;

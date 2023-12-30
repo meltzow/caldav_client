@@ -49,18 +49,18 @@ void main() {
     });
 
     test('Multistatus', () {
-      expect(multistatus.response.length, 2);
+      expect(multistatus.responses.length, 2);
       expect(multistatus.syncToken, null);
     });
 
     test('Response 0', () {
-      final response = multistatus.response[0];
+      final response = multistatus.responses[0];
 
       expect(response.href, '/dav.php/calendars/juli/default/');
     });
 
     test('Response 0 - Propstat', () {
-      final propstat = multistatus.response[0].propstat;
+      final propstat = multistatus.responses[0].propstat;
 
       expect(propstat?.prop.length, 5);
       //FIXME
@@ -71,7 +71,7 @@ void main() {
     });
 
     test('resourcetype', () {
-      final elements = (multistatus.response[0].propstat?.prop['resourcetype']
+      final elements = (multistatus.responses[0].propstat?.prop['resourcetype']
           as List<Element>);
 
       expect(elements.length, 3);
@@ -79,7 +79,7 @@ void main() {
     });
 
     test('supported-calendar-component-set', () {
-      final elements = (multistatus.response[0].propstat
+      final elements = (multistatus.responses[0].propstat
           ?.prop['supported-calendar-component-set'] as List<Element>);
 
       expect(elements[1].name, 'comp');
