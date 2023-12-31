@@ -22,13 +22,14 @@ class CalDavClient extends WebDav {
     </d:propfind>
     ''';
     var response1 = await propfind(path, body, depth: depth);
-
-    for (var response in response1.multistatus!.responses) {
-      if (response.statusSuccess()) {
-        for (var entry in response.propstat!.prop.entries) {
-          if (entry.key == 'current-user-principal' &&
-              entry.value[0].name == 'href') {
-            return entry.value[0].text;
+    if (response1.statusCode >= 200 && response1.statusCode < 300) {
+      for (var response in response1.multistatus!.responses) {
+        if (response.statusSuccess()) {
+          for (var entry in response.propstat!.prop.entries) {
+            if (entry.key == 'current-user-principal' &&
+                entry.value[0].name == 'href') {
+              return entry.value[0].text;
+            }
           }
         }
       }
@@ -36,7 +37,7 @@ class CalDavClient extends WebDav {
     return '';
   }
 
-  Future<CalResponse> getCalendarHomeSet(String path, {int depth = 0}) {
+  Future<String> getCalendarHomeSet(String path, {int depth = 0}) async {
     final body = '''
     <d:propfind xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:caldav">
       <d:prop>
@@ -44,7 +45,19 @@ class CalDavClient extends WebDav {
       </d:prop>
     </d:propfind>
     ''';
-    return propfind(path, body, depth: depth);
+    final find = await propfind(path, body, depth: depth);
+
+    for (var response in find.multistatus!.responses) {
+      if (response.statusSuccess()) {
+        for (var entry in response.propstat!.prop.entries) {
+          if (entry.key == 'calendar-home-set' &&
+              entry.value[0].name == 'href') {
+            return entry.value[0].text;
+          }
+        }
+      }
+    }
+    return '';
   }
 
   Future<CalResponse> getCalendars(String path, {int depth = 1}) {

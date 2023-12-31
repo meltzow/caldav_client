@@ -28,14 +28,22 @@ void main() {
     });
 
     test('Get calendars', () async {
-      final file = File('./test/fixture/principal.xml');
-      final document = XmlDocument.parse(file.readAsStringSync());
+      var file = File('./test/fixture/principal.xml');
+      var document = XmlDocument.parse(file.readAsStringSync());
 
-      var response = MockResponse()
+      var responsePrincipal = MockResponse()
         ..body = document
         ..httpCode = 207;
 
-      mockServer.enqueueResponse(response);
+      mockServer.enqueueResponse(responsePrincipal);
+
+      file = File('./test/fixture/homeSet.xml');
+      document = XmlDocument.parse(file.readAsStringSync());
+      var responseHomeSet = MockResponse()
+        ..body = document
+        ..httpCode = 207;
+
+      mockServer.enqueueResponse(responseHomeSet);
 
       var response1 = await client.getPrincipal('/dav.php/calendars/juli');
       expect(response1, '/remote.php/dav/principals/users/admin/');
@@ -46,6 +54,10 @@ void main() {
       expect(request.headers['depth'], '0');
       expect(request.headers['authorization'], isNotNull);
       expect(request.body, isNotNull);
+
+      var response2 =
+          await client.getCalendarHomeSet('/dav.php/calendars/juli');
+      expect(response2, '/remote.php/dav/calendars/admin/');
     });
 
     test('Get events', () async {
