@@ -1,7 +1,7 @@
 import 'dart:async';
 
+import 'package:caldav_client/src/cal_calendar.dart';
 import 'package:caldav_client/src/cal_response.dart';
-import 'package:caldav_client/src/calendar.dart';
 import 'package:caldav_client/src/multistatus/multistatus.dart';
 import 'package:caldav_client/src/webdav.dart';
 
@@ -41,7 +41,7 @@ class CalDavClient extends WebDav {
     return findFirstWithKey(find.multistatus!, 'calendar-home-set');
   }
 
-  Future<List<Calendar>> getCalendars(String path, {int depth = 1}) async {
+  Future<List<CalCalendar>> getCalendars(String path, {int depth = 1}) async {
     final body = '''
     <d:propfind xmlns:d="DAV:" xmlns:cs="http://calendarserver.org/ns/" xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:apple="http://apple.com/ns/ical/">
       <d:prop>
@@ -56,15 +56,15 @@ class CalDavClient extends WebDav {
     ''';
     final find = await propfind(path, body, depth: depth);
 
-    final list = <Calendar>[];
+    final list = <CalCalendar>[];
     for (var response in find.multistatus!.responses) {
       if (response.statusSuccess()) {
         var displayname = response.propstat?.prop['displayname'];
         var ctag = response.propstat?.prop['getctag'];
         var set = response.propstat?.prop['supported-calendar-component-set'];
         if (displayname != null && ctag != null && set != null) {
-          list.add(
-              Calendar(response.href, displayname, set[0].attributes['name']));
+          list.add(CalCalendar(
+              response.href, displayname, set[0].attributes['name']));
         }
       }
     }
