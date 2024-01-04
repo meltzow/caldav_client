@@ -1,4 +1,8 @@
+import 'dart:async';
+
 import 'package:caldav_client/src/cal_response.dart';
+import 'package:caldav_client/src/calendar.dart';
+import 'package:caldav_client/src/multistatus/multistatus.dart';
 import 'package:caldav_client/src/webdav.dart';
 
 import 'utils.dart';
@@ -22,19 +26,7 @@ class CalDavClient extends WebDav {
     </d:propfind>
     ''';
     var response1 = await propfind(path, body, depth: depth);
-    if (response1.statusCode >= 200 && response1.statusCode < 300) {
-      for (var response in response1.multistatus!.responses) {
-        if (response.statusSuccess()) {
-          for (var entry in response.propstat!.prop.entries) {
-            if (entry.key == 'current-user-principal' &&
-                entry.value[0].name == 'href') {
-              return entry.value[0].text;
-            }
-          }
-        }
-      }
-    }
-    return '';
+    return findFirstWithKey(response1.multistatus!, 'current-user-principal');
   }
 
   Future<String> getCalendarHomeSet(String path, {int depth = 0}) async {
@@ -46,21 +38,10 @@ class CalDavClient extends WebDav {
     </d:propfind>
     ''';
     final find = await propfind(path, body, depth: depth);
-
-    for (var response in find.multistatus!.responses) {
-      if (response.statusSuccess()) {
-        for (var entry in response.propstat!.prop.entries) {
-          if (entry.key == 'calendar-home-set' &&
-              entry.value[0].name == 'href') {
-            return entry.value[0].text;
-          }
-        }
-      }
-    }
-    return '';
+    return findFirstWithKey(find.multistatus!, 'calendar-home-set');
   }
 
-  Future<CalResponse> getCalendars(String path, {int depth = 1}) {
+  Future<List<Calendar>> getCalendars(String path, {int depth = 1}) async {
     final body = '''
     <d:propfind xmlns:d="DAV:" xmlns:cs="http://calendarserver.org/ns/" xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:apple="http://apple.com/ns/ical/">
       <d:prop>
@@ -73,7 +54,21 @@ class CalDavClient extends WebDav {
       </d:prop>
     </d:propfind>
     ''';
-    return propfind(path, body, depth: depth);
+    final find = await propfind(path, body, depth: depth);
+
+    final list = <Calendar>[];
+    for (var response in find.multistatus!.responses) {
+      if (response.statusSuccess()) {
+        var displayname = response.propstat?.prop['displayname'];
+        var ctag = response.propstat?.prop['getctag'];
+        var set = response.propstat?.prop['supported-calendar-component-set'];
+        if (displayname != null && ctag != null && set != null) {
+          list.add(
+              Calendar(response.href, displayname, set[0].attributes['name']));
+        }
+      }
+    }
+    return list;
   }
 
   /// This request will give us every object that's a VCALENDAR object, and its etag.
@@ -163,5 +158,18 @@ class CalDavClient extends WebDav {
     ''';
 
     return report(path, body, depth: depth);
+  }
+
+  String findFirstWithKey(MultiStatus multiStatus, String key) {
+    for (var response in multiStatus.responses) {
+      if (response.statusSuccess()) {
+        for (var entry in response.propstat!.prop.entries) {
+          if (entry.key == key && entry.value[0].name == 'href') {
+            return entry.value[0].text;
+          }
+        }
+      }
+    }
+    return '';
   }
 }
